@@ -11,7 +11,7 @@ router.post('/signup', (req, res)=>{
                query = "insert into user (name, contactNumber, email, password, status, role) values(?,?,?,?,'false','user')"
                connection.query(query,[user.username, user.cnumber,user.email, user.password], (err, results) => {
                 if(!err){
-                    return res.status(200).json({message: 'Registered Successfully, Wait Admin Approval.'})
+                    return res.status(200).json({message: 'Registered Successfully, Wait for Admin Approval.'})
                 }
                 else{
                     return res.status(500).json(err)
