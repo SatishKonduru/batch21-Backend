@@ -3,7 +3,7 @@ const connection =  require('../connection')
 const router = express.Router()
 require('dotenv').config()
 const nodemailer = require('nodemailer')
-
+const jwt = require('jsonwebtoken')
 
 var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -74,6 +74,35 @@ router.post('/forgotPassword', (req, res) => {
     })
 })
 
+
+router.post('/login', (req, res) => {
+    const user = req.body
+    query = "select email, password, role, status from user where email=?"
+    connection.query(query,[user.email], (err,results)=> {
+        if(!err){
+            if(results <= 0 || results[0].password != user.password){
+                return res.status(401).json({message: 'Incorrect Username/Password'})
+            }
+            else if(results[0].status === 'false'){
+                return res.status(401).json({message: 'Wait of Admin Approval'})
+            }
+            else if(results[0].password == user.password){
+                const response = {
+                    email: results[0].email,
+                    role: results[0].role
+                }
+                const accessToken = jwt.sign(response, process.env.SECRET_KEY, {expiresIn: '2h'})
+                return res.status(200).json({token: accessToken})
+            }
+            else{
+                return res.status(400).json({message: 'Something Went Wrong! Please try later'})
+            }
+        }
+        else{
+            return res.status(500).json(err)
+        }
+    })
+})
 
 
 module.exports = router
