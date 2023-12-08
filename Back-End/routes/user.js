@@ -104,5 +104,9 @@ router.post('/login', (req, res) => {
     })
 })
 
+router.get('/checkToken', (req, res) =>{ 
+    return res.status(200).json({message: 'true'})
+} )
+
 
 module.exports = router
